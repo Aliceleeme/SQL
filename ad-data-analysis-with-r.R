@@ -107,8 +107,8 @@ head(data)
 
 # data backup
 dt <- data
-dt <- read.csv("ga360-data-20180621-2.csv")
 
+#Call the data from directory 
 library(readr)
 dt <- read_csv("ga360-data-20180621-2.csv")
 
@@ -116,25 +116,19 @@ dt <- read_csv("ga360-data-20180621-2.csv")
 sum(is.na(dt))
 dt.na <- na.omit(dt)
 
-# 특정 내용이 들어간 데이터 결측치 처리 
+# screen size; plus size, general size and etc
 y <- subset(dt, screenResolution = '1024x768')
 
 # operatingSystem이 NA인 데이터만 출력
-#library(dplyr)
-#dt %>% filter(is.na(operatingSystem))   # operatingSystem이 NA인 데이터만 출력
-#df_nomiss <- df %>% filter(!is.na(operatingSystem))   # operatingSystem 결측치 제거한 데이터 만들기 
+library(dplyr)
+dt <- dt %>% filter(is.na(operatingSystem))   # operatingSystem이 NA인 데이터만 출력
+df_nomiss <- df %>% filter(!is.na(operatingSystem))   # operatingSystem 결측치 제거
 
-# chr to num 
-#dt$isRegister <- as.character(dt$isRegister)
-#dt$isApply <- as.character(dt$isApply)
-
-dt$mobileDeviceModel <- as.character(dt$mobileDeviceModel)
-
-# data distribution (EDA)
+# Exploring data distribution (EDA)
 hist(dt$isRegister)
 hist(dt$isApply)
 
-# 특정조건의 변수 삭제/제외하기 
+# 특정조건의 변수 삭제/제외하기 (working on it)
 # http://knight76.tistory.com/entry/R-data-table%EC%97%90%EC%84%9C-%ED%8A%B9%EC%A0%95-%EC%A1%B0%EA%B1%B4%EC%9D%98-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%9C%EC%99%B8%ED%95%98%EA%B8%B0
 library(data.table)
 table <- table[!(table$variable == score)]
