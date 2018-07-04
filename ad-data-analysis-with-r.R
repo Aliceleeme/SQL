@@ -1,5 +1,3 @@
-
-
 #### data analysis with Bigquery and R ####
 # Written by Jihye Lee 
 # from 2018-06-22 to 
@@ -13,12 +11,6 @@ datasetName <- "ga_sessions_web_view"
 
 ds <- bq_dataset(projectName, datasetName)
 
-# 예시용 
-sql <- "
-  SELECT fullVisitorId , visitId 
-  FROM `v_visit`
-  WHERE TABLE_DATE BETWEEN @startDate AND @endDate;"
-
 # 실전용; device 데이터 추출 
 
 ##sql <- "
@@ -28,118 +20,101 @@ sql <- "
   ##WHERE TABLE_DATE BETWEEN @startDate AND @endDate;"
 
 # mobiledevice에서 떼어내서 tabletdivicemodel 다시 만들어야 함
+#프로젝트, 데이터셋 지정
+projectName <- "ga360-export" # put your projectID here
+datasetName <- "ga_sessions_web_view"
 
+ds <- bq_dataset(projectName , datasetName)
+
+# startDate, endDate를 조회 parameter로 지정
 sql <- "
-SELECT
-  de.TABLE_DATE,
-  de.operatingSystem,
-  	CASE WHEN de.operatingSystem in ('Android') then 1
-  	CASE WHEN de.deviceCategory in ('iOS') then 2
-  	CASE WHEN de.deviceCategory in ('Blackberry') then 3
-  	CASE WHEN de.deviceCategory in ('Chrome OS') then 4
-  	CASE WHEN de.deviceCategory in ('Linux') then 5
-  	CASE WHEN de.deviceCategory in ('Macintosh') then 6
-  	CASE WHEN de.deviceCategory in ('Windows') then 7
-  	CASE WHEN de.deviceCategory in ('(not set)') then 0
-  de.operatingSystemVersion,
-  de.browser,
-  de.browserVersion,
-  de.screenResolution,
-  de.deviceCategory,
-	CASE WHEN de.deviceCategory in ('mobile') then 1
-	CASE WHEN de.deviceCategory in ('tablet') then 2
-		ELSE 0 end as isMobile,
-  de.mobileDeviceBranding,
-	CASE WHEN de.mobileDeviceBranding in ('(not set)') then 0
-	CASE WHEN de.mobileDeviceBranding in ('NA') then 0
-	CASE WHEN de.mobileDeviceBranding in ('Alcatel') then 1
-	CASE WHEN de.mobileDeviceBranding in ('Apple') then 2
-	CASE WHEN de.mobileDeviceBranding in ('Blackberry') then 3
-	CASE WHEN de.mobileDeviceBranding in ('Google') then 4
-	CASE WHEN de.mobileDeviceBranding in ('Huawei') then 5
-	CASE WHEN de.mobileDeviceBranding in ('KT Tech') then 6
-	CASE WHEN de.mobileDeviceBranding in ('Lava') then 7
-	CASE WHEN de.mobileDeviceBranding in ('LeEco') then 8
-	CASE WHEN de.mobileDeviceBranding in ('LG') then 9
-	CASE WHEN de.mobileDeviceBranding in ('Luna') then 10
-	CASE WHEN de.mobileDeviceBranding in ('OPPO') then 11
-	CASE WHEN de.mobileDeviceBranding in ('Pantech') then 12
-	CASE WHEN de.mobileDeviceBranding in ('Samsung') then 13
-	CASE WHEN de.mobileDeviceBranding in ('Sony') then 14
-	CASE WHEN de.mobileDeviceBranding in ('TCL') then 15
-	CASE WHEN de.mobileDeviceBranding in ('TG & Company') then 16
-	CASE WHEN de.mobileDeviceBranding in ('Xiaomi') then 17
-  de.mobileDeviceModel,
-  CASE WHEN cd.customDimensions_18 in ('A','B','C') then 1
-		ELSE 0 end as isRegister,
-  CASE WHEN cd.customDimensions_18 in ('A') then 1
-		ELSE 0 END AS isApply
-FROM `ga_sessions_web_view.v_device` AS de
-JOIN `ga_sessions_web_view.v_customDimensions_pivot` AS cd
-	on de.sessionId = cd.sessionId
-WHERE de.TABLE_DATE BETWEEN @startDate AND @endDate
-AND cd.TABLE_DATE BETWEEN @startDate AND @endDate
-ORDER BY de.TABLE_DATE, de.sessionId"
+select
+de.TABLE_DATE,
+de.operatingSystem,
+de.operatingSystemVersion,
+de.browser,
+de.browserVersion,
+de.screenResolution,
+de.deviceCategory,
+case when de.deviceCategory in ('mobile','tablet') then 1
+else 0 end as isMobile,
+de.mobileDeviceBranding,
+de.mobileDeviceModel,
+case when cd.customDimensions_18 in ('A','B','C') then 1
+else 0 end as isRegister,
+case when cd.customDimensions_18 in ('A') then 1
+else 0 end as isApply
+from
+`ga_sessions_web_view.v_device` as de
+join `ga_sessions_web_view.v_customDimensions_pivot` as cd
+on de.sessionId = cd.sessionId
+where de.TABLE_DATE between @startDate and @endDate
+and cd.TABLE_DATE between @startDate and @endDate
+order by de.TABLE_DATE, de.sessionId
+"
 
-#tb=table  
+#조회쿼리를 실행하여 결과를 tb변수에 담는다.
+#parameters 속성에 SQL에 지정한 파라미터의 값을 입력해 준다.
 tb <- bq_dataset_query(ds,
                        query = sql,
                        parameters = list(startDate = "20180501" , endDate = "20180531"),
                        billing = NULL,
                        quiet = NA)
 
-result <- bq_table_download(tb, 
-                            page_size = 500 , 
-                            start_index = 1 , 
-                            max_connections = 5, 
-                            max_results = 500000) #max_result 범위 늘려서 결과값 추출 범위 늘리기 
+#쿼리 실행결과를 다운로드하여 result변수에 담는다.
+result <- bq_table_download(tb , 
+                            page_size = 10000, 
+                            start_index = 0, 
+                            max_connections = 10, 
+                            max_results = 1000000)
+
+head(result)
 
 print(result)
 
 #### Data wrangling #### 
 #ref https://rpubs.com/jmhome/R_data_processing
-
 data <- result
-
-# variables
-str(data)
-head(data)
 
 # data backup
 dt <- data
 
-#Call the data from directory 
+# Exporting the data from directory 
+dt <- read.csv("ga360-data-20180621-2.csv")
+
 library(readr)
 dt <- read_csv("ga360-data-20180621-2.csv")
+
+str(data)
+head(data)
 
 # data 결측치 전부 제거 (신중함 필요)
 sum(is.na(dt))
 dt.na <- na.omit(dt)
 
-# screen size; plus size, general size and etc
-y <- subset(dt, screenResolution = '1024x768')
-
 # operatingSystem이 NA인 데이터만 출력
-library(dplyr)
-dt <- dt %>% filter(is.na(operatingSystem))   # operatingSystem이 NA인 데이터만 출력
-df_nomiss <- df %>% filter(!is.na(operatingSystem))   # operatingSystem 결측치 제거
+#library(dplyr)
+#dt %>% filter(is.na(operatingSystem))   # operatingSystem이 NA인 데이터만 출력
+#df_nomiss <- df %>% filter(!is.na(operatingSystem))   # operatingSystem 결측치 제거한 데이터 만들기 
 
-# Exploring data distribution (EDA)
+
+# data distribution (EDA)
 hist(dt$isRegister)
 hist(dt$isApply)
 
-# 특정조건의 변수 삭제/제외하기 (working on it)
+# 특정조건의 변수 삭제/제외하기 
 # http://knight76.tistory.com/entry/R-data-table%EC%97%90%EC%84%9C-%ED%8A%B9%EC%A0%95-%EC%A1%B0%EA%B1%B4%EC%9D%98-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%9C%EC%99%B8%ED%95%98%EA%B8%B0
 library(data.table)
 table <- table[!(table$variable == score)]
 table 
 
 # ----- 데이터 타입 바꾸기  ----- # 
+
 # factor to numeric 
 dt$broswerVersion <- as.numeric(dt$broswerVersion)
 dt$operatingSystemVersion <- as.numeric(dt$broswerVersion)
 
-# to factor 
+# to factor # http://statkclee.github.io/r-novice-inflammation/01-supp-factors-kr.html
 dt$operatingSystemVersion <- as.factor(dt$operatingSystemVersion)
 
 dt$operatingSystem <- as.factor(dt$operatingSystem)
@@ -169,28 +144,21 @@ dt <-
 
 # categorical variables의 분포 알아보기 (data_type = factor일 때만 사용 가능)
 levels(dt$mobileDeviceBranding)
-levels(dt$mobileDeviceBranding)
-
 levels(dt$browser)
-levels(dt$operatingSystem)
 
 # 접수와 승인의 갯수 알아보기 
 
 #isregister에서 1의 갯수 (접수)
 length(which(dt$isRegister==1)) 
-length(which(dt$isRegister==0))
 
 #isapply에서 1의 갯수 (승인)
 length(which(dt$isApply==1)) 
-length(which(dt$isApply==0))
 
 #ismobile에서 0의 갯수 
-length(which(dt$isMobile==0)) 
 length(which(dt$isMobile==1))
 
 #해당 날짜에 데이터 존재 유무 확인 
 length(which(dt$TABLE_DATE=="20180531"))
-length(which(dt$TABLE_DATE=="20180515")) 
 
 #브라우저 데이터 분포 파악 
 length(which(dt$browser=="Android Runtime")) #0
@@ -214,7 +182,6 @@ length(which(dt$browser=="Sarari (in-app)")) #0
 length(which(dt$browser=="Samsung Internet")) #3460
 length(which(dt$browser=="UC Browser")) #0
 length(which(dt$browser=="YaBrowser")) #0
-
 
 #카테고리 데이터 레이블링하기 (Sample code)
 df$category <- cut(df$a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high"))
@@ -278,41 +245,15 @@ dt$browser2 <-
   ifelse(dt$browser %in% "Firefox", 8, #3
   ifelse(dt$browser %in% "BlackBerry", 9, #1
   ifelse(dt$browser %in% "Mozilla Compatible Agent", 10, #2
-         0))))))))))))))))))))))
-
-  
-dt$browser2 <-
-  ifelse(dt$browser %in% "Android Runtime", 1,  #0 = etc
-  ifelse(dt$browser %in%"Android WebApps", 1,  #0 = etc
-  ifelse(dt$browser %in% "Coc Coc", 1, #0 = etc
-  ifelse(dt$browser %in% "Edge", 1,  #0 = etc
-  ifelse(dt$browser %in% "BrowserNG", 1, #0 = etc
-  ifelse(dt$browser %in% "IE with Chrome frame", 1, #0 = etc
-  ifelse(dt$browser %in% "NokiaC7-00", 1, #0 = etc
-  ifelse(dt$browser %in% "Puffin", 1, #0 = etc
-  ifelse(dt$browser %in% "Sarari (in-app)", 1, #0 = etc
-  ifelse(dt$browser %in% "UC Browser", 1, #0 = etc
-  ifelse(dt$browser %in% "YaBrowser", 1, #0 = etc
-  ifelse(dt$browser %in% "Java", 1, #0 #java는 그냥 지우는게 좋을 것 같은데 개발자 키트라서 
-  ifelse(dt$browser %in% "Chrome", 2, #7439
-  ifelse(dt$browser %in% "Samsung Internet", 3, #3460
-  ifelse(dt$browse %in% "Android Webview", 4, #2665
-  ifelse(dt$browser %in% "Safari", 5, #1074
-  ifelse(dt$browser %in% "Internet Explorer", 6, #48
-  ifelse(dt$browser %in% "Opera", 7,  #5
-  ifelse(dt$browser %in% "Firefox", 8, #3
-  ifelse(dt$browser %in% "BlackBerry", 9, #1
-  ifelse(dt$browser %in% "Mozilla Compatible Agent", 10, #2
-         0))))))))))))))))))))))
-
+         0)))))))))))))))))))))
 
 # ----------------------------------------------------------------------- # 
 
 #https://stats.stackexchange.com/questions/81483/warning-in-r-chi-squared-approximation-may-be-incorrect
 #카이제곱검정 http://rfriend.tistory.com/112
 
-library(gmodels)
-library(vcd)
+library(gmodels) #Tools for Model Fitting #http://rfriend.tistory.com/120
+library(vcd) 
 
 attach(dt) #factor, chr로 정제된 데이터 넣기 
 CrossTable(mobileDeviceBranding, isRegister, # crosstable = 교차분석 http://dbrang.tistory.com/1067 
@@ -339,5 +280,26 @@ chisq.test(model)
 barplot(os, beside = TRUE, legend = TRUE)
 
 # csv exporting 
-write.csv(data, file="ga360-data-20180621-2.csv", row.names = TRUE) 
+write.csv(data, file="ga360-data-20180704-2.csv", row.names = TRUE) 
 
+# ----------------------------------------------------------------------- # 
+# ----------------------------------------------------------------------- # 
+
+# use quantiles for cut https://stackoverflow.com/questions/40380112/categorize-continuous-variable-with-dplyr
+
+#### categorize continuous varialbe with dplyr ####
+#https://stackoverflow.com/questions/40380112/categorize-continuous-variable-with-dplyr 
+
+set.seed(123)
+df <- data.frame(a=rnorm(100))
+df$category[df$a < 0.5] <- "low"
+df$category[df$a < 0.5 & df$a <0.6] <- "middle"
+df$category[df$a > 0.6] <- "high"
+
+library(dplyr)
+res <- df %>% mutate(category = cut(a, breaks = c(-Inf, 0.5, 0.6, Inf), labels = c("low", "middle", "high")))
+
+xs = quantile(df$a, c(0,1/3,2/3,1))
+xs[1] = xs[1]-.00005
+df <-  df %>% mutate(category = cut(a, breaks = xs, labels=c("low","middle","high")))
+boxplot(df$a~df$category, col=3:5)
