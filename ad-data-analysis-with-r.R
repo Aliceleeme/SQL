@@ -69,34 +69,43 @@ result <- bq_table_download(tb ,
                             max_results = 1000000)
 
 head(result)
-
 print(result)
 
 #### Data wrangling #### 
 #ref https://rpubs.com/jmhome/R_data_processing
 data <- result
-
-# data backup
-dt <- data
+dt <- data # data backup
 
 # Exporting the data from directory 
+getwd()
 dt <- read.csv("ga360-data-20180621-2.csv")
 
 library(readr)
-dt <- read_csv("ga360-data-20180621-2.csv")
-
+#dt <- read_csv("ga360-data-20180621-2.csv")
+dt <- read_csv("ga360-data-may-20180704.csv")
 str(data)
 head(data)
 
 # data 결측치 전부 제거 (신중함 필요)
-sum(is.na(dt))
-dt.na <- na.omit(dt)
+sum(is.na(data))
+dt <- na.omit(data)
 
-# operatingSystem이 NA인 데이터만 출력
-#library(dplyr)
-#dt %>% filter(is.na(operatingSystem))   # operatingSystem이 NA인 데이터만 출력
-#df_nomiss <- df %>% filter(!is.na(operatingSystem))   # operatingSystem 결측치 제거한 데이터 만들기 
+# 데이터 기기 타입에 따라 나누기 
+#기기타입 변환 
+#MOBILE 
+dt$isMobile <-
+  ifelse(dt$deviceCategory %in% 'mobile', 1,
+  ifelse(dt$deviceCategory %in% 'tablet', 2,
+  	0))
 
+#PC 
+dt$isPC <- ifelse(dt$deviceCategory %in% 'desktop', 1, 0)
+
+#pc/mobile 변환 
+dtPC <- subset(dt, isPC == 1)
+dtMobile <- subset(dt, isPC == 0)
+dt <- dtMobile 
+dt <- dt[, c(3:14)]
 
 # data distribution (EDA)
 hist(dt$isRegister)
@@ -104,9 +113,9 @@ hist(dt$isApply)
 
 # 특정조건의 변수 삭제/제외하기 
 # http://knight76.tistory.com/entry/R-data-table%EC%97%90%EC%84%9C-%ED%8A%B9%EC%A0%95-%EC%A1%B0%EA%B1%B4%EC%9D%98-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%9C%EC%99%B8%ED%95%98%EA%B8%B0
-library(data.table)
-table <- table[!(table$variable == score)]
-table 
+#library(data.table)
+#dt <- dt[!(dt$operatingSystem  == Java)]
+#table 
 
 # ----- 데이터 타입 바꾸기  ----- # 
 
@@ -129,8 +138,10 @@ dt$mobileDeviceBranding2 <- as.factor(dt$mobileDeviceBranding2)
 dt$operatingSystem2 <- as.factor(dt$operatingSystem2)
 dt$deviceCategory2 <- as.factor(dt$deviceCategory2)
 
-#종속변수 
 dt$isMobile <- as.factor(dt$isMobile)
+dt$isPC <- as.factor(dt$isPC)
+
+#종속변수 
 dt$isRegister <- as.factor(dt$isRegister)
 dt$isApply <- as.factor(dt$isApply)
 
@@ -160,6 +171,10 @@ length(which(dt$isMobile==1))
 #해당 날짜에 데이터 존재 유무 확인 
 length(which(dt$TABLE_DATE=="20180531"))
 
+#operating system 확인 
+length(which(dt$operatingSystem =="Tizen"))
+length(which(dt$mobileDeviceBranding=='Point Mobile'))
+
 #브라우저 데이터 분포 파악 
 length(which(dt$browser=="Android Runtime")) #0
 length(which(dt$browser=="Android WebApps")) #0
@@ -183,12 +198,13 @@ length(which(dt$browser=="Samsung Internet")) #3460
 length(which(dt$browser=="UC Browser")) #0
 length(which(dt$browser=="YaBrowser")) #0
 
-#카테고리 데이터 레이블링하기 (Sample code)
-df$category <- cut(df$a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high"))
 
+#카테고리 데이터 레이블링하기 (Sample code)
+#df$category <- cut(df$a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high"))
 
 # ----- 새 컬럼으로 카테고리 데이터로 바꾸기 ----- # 
 
+#OS 
 dt$operatingSystem2 <- 
   ifelse(dt$operatingSystem %in% 'Android', 1,
   ifelse(dt$operatingSystem %in% 'iOS', 2, 
@@ -199,33 +215,66 @@ dt$operatingSystem2 <-
   ifelse(dt$operatingSystem %in% 'Windows', 7,
   	0)))))))
 
+#Mobile device brand 
 dt$mobileDeviceBranding2 <-
-  ifelse(dt$mobileDeviceBranding %in% 'Alcatel', 1,
+  ifelse(dt$mobileDeviceBranding %in% 'Samsung', 1,
   ifelse(dt$mobileDeviceBranding %in% 'Apple', 2, 
-  ifelse(dt$mobileDeviceBranding %in% 'Blackberry', 3, 
+  ifelse(dt$mobileDeviceBranding %in% 'LG', 3, 
   ifelse(dt$mobileDeviceBranding %in% 'Google', 4,
   ifelse(dt$mobileDeviceBranding %in% 'Huawei', 5,
   ifelse(dt$mobileDeviceBranding %in% 'KT Tech', 6,
   ifelse(dt$mobileDeviceBranding %in% 'Lava', 7,
-  ifelse(dt$mobileDeviceBranding %in% 'OPPO', 8,
-  ifelse(dt$mobileDeviceBranding %in% 'Pantech', 9,
-  ifelse(dt$mobileDeviceBranding %in% 'Samsung', 10, 
-  ifelse(dt$mobileDeviceBranding %in% 'Sony', 11, 
-  ifelse(dt$mobileDeviceBranding %in% 'TCL', 12,
-  ifelse(dt$mobileDeviceBranding %in% 'TG & Company', 13,
-  ifelse(dt$mobileDeviceBranding %in% 'Xiaomi', 14,
-  ifelse(dt$mobileDeviceBranding %in% 'Windows', 15,
-  	0)))))))))))))))
+  ifelse(dt$mobileDeviceBranding %in% 'Pantech', 8,
+  ifelse(dt$mobileDeviceBranding %in% 'Sony', 9,  
+  ifelse(dt$mobileDeviceBranding %in% 'Xiaomi', 10,
+  ifelse(dt$mobileDeviceBranding %in% 'Windows', 11,
+  ifelse(dt$mobileDeviceBranding %in% 'Huawei', 12,
+  ifelse(dt$mobileDeviceBranding %in% 'Blackberry', 13,
+  ifelse(dt$mobileDeviceBranding %in% 'Microsoft', 13,
+  ifelse(dt$mobileDeviceBranding %in% 'Alldaymall', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Asus', 16, 
+  ifelse(dt$mobileDeviceBranding %in% 'Amazon', 16, 
+  ifelse(dt$mobileDeviceBranding %in% 'Alcatel', 16, 
+  ifelse(dt$mobileDeviceBranding %in% 'Nokia', 16, #etc
+  ifelse(dt$mobileDeviceBranding %in% 'Acer', 16, #etc
+  ifelse(dt$mobileDeviceBranding %in% 'Canaima', 16, #etc
+  ifelse(dt$mobileDeviceBranding %in% 'Meizu', 16, #etc
+  ifelse(dt$mobileDeviceBranding %in% 'TCL', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'OPPO', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'IPPO', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'OnePlus', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Luna', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Wiko', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Vivo', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'TG & Company', 16, 
+  ifelse(dt$mobileDeviceBranding %in% 'CAT', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Point Mobile', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'LeEco', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Sharp', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Sky Devices', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'SonyEricsson', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'HTC', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Motorola', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Nvidia', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Lava', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Nextbit', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Hannspree', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Chuwi', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Lenovo', 16,
+  ifelse(dt$mobileDeviceBranding %in% 'Opera Software', 16,
+  	0)))))))))))))))))))))))))))))))))))))))))))))           
 
-dt$deviceCategory2 <-
-  ifelse(dt$deviceCategory %in% 'mobile', 1,
-  ifelse(dt$deviceCategory %in% 'desktop', 2, 
-  ifelse(dt$deviceCategory %in% 'tablet', 3,
-  	0)))
+#pc = ms, apple, samsung, LG, google, notset 
 
+
+# pc인 조건과 mobile인 조건을 따로 추출/데이터 분석해서 돌려봐야 하는거 아닌가 싶음
+
+#Browser 
 dt$browser2 <-
+  ifelse(dt$browser %in% "YaBrowser", 1,  #0 = etc
+  ifelse(dt$browser %in% "Amazon Silk", 1,  #0 = etc
   ifelse(dt$browser %in% "Android Runtime", 1,  #0 = etc
-  ifelse(dt$browser %in%"Android WebApps", 1,  #0 = etc
+  ifelse(dt$browser %in% "Android WebApps", 1,  #0 = etc
   ifelse(dt$browser %in% "Coc Coc", 1, #0 = etc
   ifelse(dt$browser %in% "Edge", 1,  #0 = etc
   ifelse(dt$browser %in% "BrowserNG", 1, #0 = etc
@@ -238,16 +287,33 @@ dt$browser2 <-
   ifelse(dt$browser %in% "Java", 1, #0 #java는 그냥 지우는게 좋을 것 같은데 개발자 키트라서 
   ifelse(dt$browser %in% "Chrome", 2, #7439
   ifelse(dt$browser %in% "Samsung Internet", 3, #3460
-  ifelse(dt$browse %in% "Android Webview", 4, #2665
+  ifelse(dt$browser %in% "Android Webview", 4, #2665
   ifelse(dt$browser %in% "Safari", 5, #1074
   ifelse(dt$browser %in% "Internet Explorer", 6, #48
   ifelse(dt$browser %in% "Opera", 7,  #5
   ifelse(dt$browser %in% "Firefox", 8, #3
   ifelse(dt$browser %in% "BlackBerry", 9, #1
   ifelse(dt$browser %in% "Mozilla Compatible Agent", 10, #2
-         0)))))))))))))))))))))
+         0)))))))))))))))))))))))
+
+# 특정 열 삭제 혹은 추출 
+dt2 <-dt[, c(1:5)] #열 
+dt2 <- dt[c(3:10), ] #행
+
 
 # ----------------------------------------------------------------------- # 
+
+#이변량분할표 contingency table 
+#http://rfriend.tistory.com/tag/gmodels%20package
+
+dt_table_3 <- with(dt, table(mobileDeviceBranding, isRegister))
+
+mosaic(dt_table_3, 
+        gp=gpar(fill=c("red", "blue")), 
+        direction="v", 
+        main="Mosaic plot of device branding & register")
+ 
+
 
 #https://stats.stackexchange.com/questions/81483/warning-in-r-chi-squared-approximation-may-be-incorrect
 #카이제곱검정 http://rfriend.tistory.com/112
@@ -261,7 +327,6 @@ CrossTable(mobileDeviceBranding, isRegister, # crosstable = 교차분석 http://
             chisq = TRUE) # chisq-test 
 detach(dt)
 
-# 카이제곱검정
 # 11p~ http://contents.kocw.net/KOCW/document/2013/koreasejong/HongSungsik4/10.pdf 
 # 추천하는 설명: http://blog.naver.com/PostView.nhn?blogId=parksehoon1971&logNo=220984787036&categoryNo=30&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
 # 데이터프레임으로 카이제곱 검정하기 http://rfriend.tistory.com/137
@@ -303,3 +368,17 @@ xs = quantile(df$a, c(0,1/3,2/3,1))
 xs[1] = xs[1]-.00005
 df <-  df %>% mutate(category = cut(a, breaks = xs, labels=c("low","middle","high")))
 boxplot(df$a~df$category, col=3:5)
+
+
+
+-- 
+
+chi <-dt[, c(10:15)] #열 
+
+
+#sampling 
+# http://blog.acronym.co.kr/587
+
+set.seed(!)
+library(sample)
+dnorm
