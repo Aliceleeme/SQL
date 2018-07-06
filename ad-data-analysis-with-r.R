@@ -104,8 +104,42 @@ dt$isPC <- ifelse(dt$deviceCategory %in% 'desktop', 1, 0)
 #pc/mobile 변환 
 dtPC <- subset(dt, isPC == 1)
 dtMobile <- subset(dt, isPC == 0)
-dt <- dtMobile 
+dt <- dtMobile #데이터 복사 
 dt <- dt[, c(3:14)]
+
+
+# 데이터 샘플링  
+# 샘플링 방법론 참고: http://rfriend.tistory.com/58 
+dt <- sample(dt, 1000, replace=F)
+
+
+#— 2. 그룹수, 70% : 30%
+idx <- sample(2, nrow(dt), replace = TRUE, prob = c(0.7, 0.3))
+
+idx <- sample(2, nrow(data), replace = TRUE, prob = c(0.7, 0.3))
+train <- data[idx == 1, ]
+test <- data[idx == 2, ]
+
+# 불균형을 줄이는 샘플링 
+
+dtmobile$isRegister2 <- dtmobile$isRegister
+
+#https://thebook.io/006723/ch10/06/01/ 
+library(caret) 
+train <- upSample(subset(dt, select = -isRegister2), dt$isRegister) #업샘플링: 해당 분류에 속하는 데이터가 적은 쪽을 표본으로 더 많이 추출하는 방법
+train2 <- downSample(subset(dt, select = -isRegister2), dt$isRegister) #다운샘플링: 데이터가 많은 쪽을 적게 추출하는 방법
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 #다운샘플링 하면 5:5로 비율 맞춰져서 데이터 축소 됨 
+
+
+length(which(train$isRegister==0))
+length(which(train$isRegister==1))
+
+length(which(train2$isRegister==0))
+length(which(train2$isRegister==1))
+
+hist(train2$isRegister)
+
+#sampling http://mgdjaxo.blogspot.com/2015/06/r-sample-function.html
 
 # data distribution (EDA)
 hist(dt$isRegister)
@@ -198,11 +232,12 @@ length(which(dt$browser=="Samsung Internet")) #3460
 length(which(dt$browser=="UC Browser")) #0
 length(which(dt$browser=="YaBrowser")) #0
 
-
 #카테고리 데이터 레이블링하기 (Sample code)
 #df$category <- cut(df$a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high"))
 
 # ----- 새 컬럼으로 카테고리 데이터로 바꾸기 ----- # 
+# 코드 개선이 필요; http://statdb1.uos.ac.kr/computing/r-data-handling.php
+#                  https://stackoverflow.com/questions/24459752/can-dplyr-package-be-used-for-conditional-mutating?rq=1
 
 #OS 
 dt$operatingSystem2 <- 
@@ -296,6 +331,180 @@ dt$browser2 <-
   ifelse(dt$browser %in% "Mozilla Compatible Agent", 10, #2
          0)))))))))))))))))))))))
 
+# device model
+# 기기 분리> 고급형, 보급형, 등등 
+dt$mobileDeviceModel2 <- 
+  ifelse(dt$mobileDeviceModel %in% 'iPhone', 1,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G955N', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-G950N', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G930S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-G935S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-G965N', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G930L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G935L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G935K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G960N', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G920S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G920K', 2, #갤럭시 
+  ifelse(dt$mobileDeviceModel %in% 'SM-G925K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G920L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G930K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G925L', 2,  
+  ifelse(dt$mobileDeviceModel %in% 'SM-G928S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G610L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G610S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G925S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G610K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G920A', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G928L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G720N0', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-G906S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G906K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G928K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G610K/KKU1APL1', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-G600S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N950N/KSU1AQI2', 2, #갤럭시 노트 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N920S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N950N', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N935K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N935S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N920K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N920L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N910S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N916L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N910L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N900S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N916S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'M-N910K', 2,   #갤럭시노트4 
+  ifelse(dt$mobileDeviceModel %in% 'M-N915S', 2,  #갤럭시노트 엣지 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N935L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N916K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N900L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A530N', 2, #갤럭시 A시리즈 
+  ifelse(dt$mobileDeviceModel %in% 'SM-A720S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-A710L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A810S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A710K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A520F', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A520L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A800S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A520S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A520K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A500L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A710S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A310N0', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A510S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-A700L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J530S', 2,  #갤럭시 j
+  ifelse(dt$mobileDeviceModel %in% 'SM-J730K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J710K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J727S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J500N0', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J330', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J510H', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J510L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J510S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J510K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-J530L', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SHV-E330S', 2,  #갤럭시S4 
+  ifelse(dt$mobileDeviceModel %in% 'SHV-E250S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'LGM-V300L', 3, #엘지 v30 thinq 
+  ifelse(dt$mobileDeviceModel %in% 'F800S', 3, #엘지 V20 
+  ifelse(dt$mobileDeviceModel %in% 'F800K', 3,#엘지 V20 
+  ifelse(dt$mobileDeviceModel %in% 'F600L', 3, #엘지 V10 
+  ifelse(dt$mobileDeviceModel %in% 'F700S', 3, #엘지 g5 
+  ifelse(dt$mobileDeviceModel %in% 'F700K', 3, #엘지 g5 
+  ifelse(dt$mobileDeviceModel %in% 'F700L', 3,#엘지 g5 
+  ifelse(dt$mobileDeviceModel %in% 'LG-F700L', 3,  #엘지 g5 
+  ifelse(dt$mobileDeviceModel %in% 'H830', 3,  #엘지 g5 usa 
+  ifelse(dt$mobileDeviceModel %in% 'M-G600K', 3, #엘지 g6 
+  ifelse(dt$mobileDeviceModel %in% 'LS991', 3, #엘지 USA 한정 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-X600L', 3, #엘지 g6 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-G600L', 3, #엘지 g6 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-G600S', 3, #엘지 g6 
+  ifelse(dt$mobileDeviceModel %in% 'V300L', 3, #엘지 v30 
+  ifelse(dt$mobileDeviceModel %in% 'LG-F800L', 3,  #엘지 v20
+  ifelse(dt$mobileDeviceModel %in% 'F600S ', 3,  #엘지 V10 
+  ifelse(dt$mobileDeviceModel %in% 'LG-F600L', 3,  #엘지 V10 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-X600S', 3, #엘지 q6 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-K120L', 3, #엘지 x300 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-X320L', 3, #엘지 x500 
+  ifelse(dt$mobileDeviceModel %in% 'IM-100S', 4, #스카이 im100 
+  ifelse(dt$mobileDeviceModel %in% 'IM-A890K', 4, #팬텍 베가 시크릿노트  
+  ifelse(dt$mobileDeviceModel %in% 'Windows RT Tablet', 5, #surface (마소)
+    0))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+#------코드 개선작업 -------#
+
+dt$mobileDeviceModel2 <- 
+  ifelse(dt$mobileDeviceModel %in% 'iPhone', 1,
+  ifelse(dt$mobileDeviceModel %in% c('SM-G955N', 'SM-G950N', 'SM-G930S', 'SM-G935S', 'SM-G965N', 'SM-G930L', 'SM-G935L','SM-G935K','SM-G960N', 'SM-G920S', 'SM-G920K', 'SM-G925K', 'SM-G920L', 'SM-G930K', 'SM-G925L', 'SM-G928S'), 2,
+  ifelse(dt$mobileDeviceModel %in% c('SM-G610L', 'SM-G610S', 'SM-G925S', 'SM-G610K', 'SM-G920A', 'SM-G928L', 'SM-G720N0', 'SM-G906S'), 2,
+  ifelse(dt$mobileDeviceModel %in% c('SM-G906K', 'SM-G928K', 'SM-G610K/KKU1APL1', 'SM-G600S', 'SM-N950N/KSU1AQI2', 'SM-N920S','SM-N950N'), 2, 
+  ifelse(dt$mobileDeviceModel %in% c('SM-N935K', 'SM-N935S', 'SM-N920K', 'SM-N920L', 'SM-N910S','SM-N916L', 'SM-N910L', 'SM-N900S'), 2, 
+  ifelse(dt$mobileDeviceModel %in% c('SM-N916S', 'M-N910K', 'M-N915S', 'SM-N935L', 'SM-N916K', 'SM-N900L', 'SM-A530N', 'SM-A720S'), 2, 
+  ifelse(dt$mobileDeviceModel %in% c('SM-A710L', 'SM-A810S', 'SM-A710K', 'SM-A520F', 'SM-A520L', 'SM-A800S', 'SM-A520S', 'SM-A520K'), 2,
+  ifelse(dt$mobileDeviceModel %in% c('SM-A500L', 'SM-A710S', 'SM-A310N0', 'SM-A510S', 'SM-A700L', 'SM-J530S','SM-J730K', 'SM-J710K'), 2,
+  ifelse(dt$mobileDeviceModel %in% c('SM-J727S', 'SM-J500N0','SM-J330', 'SM-J510H', 'SM-J510L', 'SM-J510S', 'SM-J510K', 'SM-J530L'), 2,
+  ifelse(dt$mobileDeviceModel %in% c('SHV-E330S', 'SHV-E250S'), 2, 0)))))))))))
+
+
+dt$mobileDeviceModel2 <- 
+  ifelse(dt$mobileDeviceModel %in% c('LGM-V300L', 'F800S', 'F800K', 'F600L', 'F700S', 'F700K', 'F700L', 'LG-F700L', 'H830', 'M-G600K', 'LS991', 'LGM-X600L', 'LGM-G600L', 'LGM-G600S', 'V300L', 'LG-F800L', 'F600S ', 'LG-F600L', 'LGM-X600S', 'LGM-K120L', 'LGM-X320L'), 3, 0)
+  ifelse(dt$mobileDeviceModel %in% c('IM-100S', 'IM-A890K'), 4,  
+  ifelse(dt$mobileDeviceModel %in% c('Windows RT Tablet'), 5, 0)))
+
+
+f %>% mutate(g = case_when(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4) ~ 2,
+                            a == 0 | a == 1 | a == 4 | a == 3 |  c == 4 ~ 3,
+                            TRUE ~ NA_real_))
+
+df %>%
+  mutate(g = if_else(mobileDeviceModel == 'LGM-V300L' | mobileDeviceModel == 'F800S' | dt %% mobileDeviceModel == 'F800K' | (a == 1 & b == 4), 2,
+               if_else(a == 0 | a == 1 | a == 4 | a == 3 |  c == 4, 3, NA_real_)))
+
+
+#https://dplyr.tidyverse.org/reference/case_when.html
+
+
+patterns <- list(
+  x %% 35 == 0 ~ "fizz buzz",
+  x %% 5 == 0 ~ "fizz",
+  x %% 7 == 0 ~ "buzz",
+  TRUE ~ as.factor(x)
+)
+case_when(!!!patterns)
+
+library(dplyr)
+patterns <- list(
+    dt %% mobileDeviceModel == 'LGM-V300L' ~ 3, #엘지 v30 thinq 
+    dt %% mobileDeviceModel == 'F800S' ~ 3, #엘지 V20 
+    dt %% mobileDeviceModel == 'F800K' ~ 3, #엘지 V20 
+    dt %% mobileDeviceModel ==  'F600L' ~ 3, #엘지 V10 
+    dt %% mobileDeviceModel ==  'F700S' ~ 3, #엘지 g5 
+    dt %% mobileDeviceModel ==  'F700K' ~ 3, #엘지 g5 
+    dt %% mobileDeviceModel ==  'F700L' ~ 3,#엘지 g5 
+    dt %% mobileDeviceModel ==  'LG-F700L' ~ 3,  #엘지 g5 
+    dt %% mobileDeviceModel ==  'H830' ~ 3,  #엘지 g5 usa 
+    dt %% mobileDeviceModel ==  'M-G600K' ~ 3, #엘지 g6 
+    dt %% mobileDeviceModel ==  'LS991' ~ 3, #엘지 USA 한정 
+    dt %% mobileDeviceModel ==  'LGM-X600L' ~ 3, #엘지 g6 
+    dt %% mobileDeviceModel ==  'LGM-G600L' ~ 3, #엘지 g6 
+    dt %% mobileDeviceModel ==  'LGM-G600S' ~ 3, #엘지 g6 
+    dt %% mobileDeviceModel ==  'V300L' ~ 3, #엘지 v30 
+    dt %% mobileDeviceModel ==  'LG-F800L' ~ 3,  #엘지 v20
+    dt %% mobileDeviceModel ==  'F600S ' ~ 3,  #엘지 V10 
+    dt %% mobileDeviceModel ==  'LG-F600L' ~ 3,  #엘지 V10 
+    dt %% mobileDeviceModel ==  'LGM-X600S' ~ 3, #엘지 q6 
+    dt %% mobileDeviceModel ==  'LGM-K120L' ~ 3, #엘지 x300 
+    dt %% mobileDeviceModel ==  'LGM-X320L' ~ 3, #엘지 x500 
+    TRUE ~ as.factor(x)
+     ) 
+
+case_when(!!!patterns)
+
+
 # 특정 열 삭제 혹은 추출 
 dt2 <-dt[, c(1:5)] #열 
 dt2 <- dt[c(3:10), ] #행
@@ -313,19 +522,18 @@ mosaic(dt_table_3,
         direction="v", 
         main="Mosaic plot of device branding & register")
  
-
-
 #https://stats.stackexchange.com/questions/81483/warning-in-r-chi-squared-approximation-may-be-incorrect
 #카이제곱검정 http://rfriend.tistory.com/112
 
 library(gmodels) #Tools for Model Fitting #http://rfriend.tistory.com/120
 library(vcd) 
 
-attach(dt) #factor, chr로 정제된 데이터 넣기 
-CrossTable(mobileDeviceBranding, isRegister, # crosstable = 교차분석 http://dbrang.tistory.com/1067 
+attach(train2) #factor, chr로 정제된 데이터 넣기 
+#detach(train2)
+
+CrossTable(mobileDeviceBranding2, isRegister, # crosstable = 교차분석 http://dbrang.tistory.com/1067 
             expected = TRUE, # expected frequency
             chisq = TRUE) # chisq-test 
-detach(dt)
 
 # 11p~ http://contents.kocw.net/KOCW/document/2013/koreasejong/HongSungsik4/10.pdf 
 # 추천하는 설명: http://blog.naver.com/PostView.nhn?blogId=parksehoon1971&logNo=220984787036&categoryNo=30&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
@@ -347,38 +555,23 @@ barplot(os, beside = TRUE, legend = TRUE)
 # csv exporting 
 write.csv(data, file="ga360-data-20180704-2.csv", row.names = TRUE) 
 
-# ----------------------------------------------------------------------- # 
-# ----------------------------------------------------------------------- # 
-
-# use quantiles for cut https://stackoverflow.com/questions/40380112/categorize-continuous-variable-with-dplyr
-
-#### categorize continuous varialbe with dplyr ####
-#https://stackoverflow.com/questions/40380112/categorize-continuous-variable-with-dplyr 
-
-set.seed(123)
-df <- data.frame(a=rnorm(100))
-df$category[df$a < 0.5] <- "low"
-df$category[df$a < 0.5 & df$a <0.6] <- "middle"
-df$category[df$a > 0.6] <- "high"
-
-library(dplyr)
-res <- df %>% mutate(category = cut(a, breaks = c(-Inf, 0.5, 0.6, Inf), labels = c("low", "middle", "high")))
-
-xs = quantile(df$a, c(0,1/3,2/3,1))
-xs[1] = xs[1]-.00005
-df <-  df %>% mutate(category = cut(a, breaks = xs, labels=c("low","middle","high")))
-boxplot(df$a~df$category, col=3:5)
-
-
 
 -- 
 
 chi <-dt[, c(10:15)] #열 
 
 
-#sampling 
-# http://blog.acronym.co.kr/587
+f %>% mutate(g = case_when(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4) ~ 2,
+                            a == 0 | a == 1 | a == 4 | a == 3 |  c == 4 ~ 3,
+                            TRUE ~ NA_real_))
 
-set.seed(!)
-library(sample)
-dnorm
+df %>%
+  mutate(g = if_else(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4), 2,
+               if_else(a == 0 | a == 1 | a == 4 | a == 3 |  c == 4, 3, NA_real_)))
+
+
+
+df %>% 
+    mutate( g = case_when(
+                a == 2 | a == 5 | a == 7 | (a == 1 & b == 4 )     ~   2,
+                a == 0 | a == 1 | a == 4 |  a == 3 | c == 4       ~   3
