@@ -334,8 +334,8 @@ dt$browser2 <-
 # device model
 # 기기 분리> 고급형, 보급형, 등등 
 dt$mobileDeviceModel2 <- 
-  ifelse(dt$mobileDeviceModel %in% 'iPhone', 1,
-  ifelse(dt$mobileDeviceModel %in% 'SM-G955N', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'iPhone', 1, #아이폰 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'SM-G955N', 2, #갤럭시 시리즈 시작 (고급형)
   ifelse(dt$mobileDeviceModel %in% 'SM-G950N', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G930S', 2, 
   ifelse(dt$mobileDeviceModel %in% 'SM-G935S', 2, 
@@ -345,7 +345,7 @@ dt$mobileDeviceModel2 <-
   ifelse(dt$mobileDeviceModel %in% 'SM-G935K', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G960N', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G920S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-G920K', 2, #갤럭시 
+  ifelse(dt$mobileDeviceModel %in% 'SM-G920K', 2, 
   ifelse(dt$mobileDeviceModel %in% 'SM-G925K', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G920L', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G930K', 2,
@@ -363,24 +363,26 @@ dt$mobileDeviceModel2 <-
   ifelse(dt$mobileDeviceModel %in% 'SM-G928K', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G610K/KKU1APL1', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-G600S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N950N/KSU1AQI2', 2, #갤럭시 노트 
-  ifelse(dt$mobileDeviceModel %in% 'SM-N920S', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SHV-E330S', 2,  #갤럭시S4 
+  ifelse(dt$mobileDeviceModel %in% 'SHV-E250S', 2, #갤럭시 시리즈 끝 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'SM-N950N/KSU1AQI2', 2,  #갤럭시 노트 시리즈 시작 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'SM-N920S', 2, 
   ifelse(dt$mobileDeviceModel %in% 'SM-N950N', 2, 
-  ifelse(dt$mobileDeviceModel %in% 'SM-N935K', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N935S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N920K', 2,
+  ifelse(dt$mobileDeviceModel %in% 'SM-N935K', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N935S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N920K', 2, 
   ifelse(dt$mobileDeviceModel %in% 'SM-N920L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N910S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N916L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N910L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N900S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N916S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'M-N910K', 2,   #갤럭시노트4 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N910S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N916L', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N910L', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N900S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N916S', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'M-N910K', 2,  #갤럭시노트4 
   ifelse(dt$mobileDeviceModel %in% 'M-N915S', 2,  #갤럭시노트 엣지 
-  ifelse(dt$mobileDeviceModel %in% 'SM-N935L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N916K', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-N900L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-A530N', 2, #갤럭시 A시리즈 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N935L', 2,  
+  ifelse(dt$mobileDeviceModel %in% 'SM-N916K', 2, 
+  ifelse(dt$mobileDeviceModel %in% 'SM-N900L', 2, #갤럭시 노트 시리즈 (고급형) 끝 
+  ifelse(dt$mobileDeviceModel %in% 'SM-A530N', 2, #갤럭시 A시리즈 시작 (중급형)
   ifelse(dt$mobileDeviceModel %in% 'SM-A720S', 2, 
   ifelse(dt$mobileDeviceModel %in% 'SM-A710L', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-A810S', 2,
@@ -394,8 +396,8 @@ dt$mobileDeviceModel2 <-
   ifelse(dt$mobileDeviceModel %in% 'SM-A710S', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-A310N0', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-A510S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-A700L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-J530S', 2,  #갤럭시 j
+  ifelse(dt$mobileDeviceModel %in% 'SM-A700L', 2,  #갤럭시 A시리즈 (중급형) 끝 
+  ifelse(dt$mobileDeviceModel %in% 'SM-J530S', 2,  #갤럭시 j시리즈 (보급형) 시작 
   ifelse(dt$mobileDeviceModel %in% 'SM-J730K', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-J710K', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-J727S', 2,
@@ -405,56 +407,67 @@ dt$mobileDeviceModel2 <-
   ifelse(dt$mobileDeviceModel %in% 'SM-J510L', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-J510S', 2,
   ifelse(dt$mobileDeviceModel %in% 'SM-J510K', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SM-J530L', 2,
-  ifelse(dt$mobileDeviceModel %in% 'SHV-E330S', 2,  #갤럭시S4 
-  ifelse(dt$mobileDeviceModel %in% 'SHV-E250S', 2,
-  ifelse(dt$mobileDeviceModel %in% 'LGM-V300L', 3, #엘지 v30 thinq 
-  ifelse(dt$mobileDeviceModel %in% 'F800S', 3, #엘지 V20 
-  ifelse(dt$mobileDeviceModel %in% 'F800K', 3,#엘지 V20 
-  ifelse(dt$mobileDeviceModel %in% 'F600L', 3, #엘지 V10 
-  ifelse(dt$mobileDeviceModel %in% 'F700S', 3, #엘지 g5 
+  ifelse(dt$mobileDeviceModel %in% 'SM-J530L', 2, #갤럭시 j시리즈 (보급형)  끝 
+
+  ifelse(dt$mobileDeviceModel %in% 'F700S', 3, #엘지 g5  #LG G시리즈 시작 (고급형)
   ifelse(dt$mobileDeviceModel %in% 'F700K', 3, #엘지 g5 
   ifelse(dt$mobileDeviceModel %in% 'F700L', 3,#엘지 g5 
   ifelse(dt$mobileDeviceModel %in% 'LG-F700L', 3,  #엘지 g5 
   ifelse(dt$mobileDeviceModel %in% 'H830', 3,  #엘지 g5 usa 
-  ifelse(dt$mobileDeviceModel %in% 'M-G600K', 3, #엘지 g6 
+  ifelse(dt$mobileDeviceModel %in% 'M-G600K', 3, #엘지 g6 (고급형)
   ifelse(dt$mobileDeviceModel %in% 'LS991', 3, #엘지 USA 한정 
   ifelse(dt$mobileDeviceModel %in% 'LGM-X600L', 3, #엘지 g6 
   ifelse(dt$mobileDeviceModel %in% 'LGM-G600L', 3, #엘지 g6 
-  ifelse(dt$mobileDeviceModel %in% 'LGM-G600S', 3, #엘지 g6 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-G600S', 3, #엘지 g6 #LG G시리즈 끝 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'LGM-V300L', 3, #엘지 v30 thinq #LG V시리즈 시작 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'F800S', 3, #엘지 V20 
+  ifelse(dt$mobileDeviceModel %in% 'F800K', 3,#엘지 V20 
+  ifelse(dt$mobileDeviceModel %in% 'F600L', 3, #엘지 V10 
   ifelse(dt$mobileDeviceModel %in% 'V300L', 3, #엘지 v30 
   ifelse(dt$mobileDeviceModel %in% 'LG-F800L', 3,  #엘지 v20
   ifelse(dt$mobileDeviceModel %in% 'F600S ', 3,  #엘지 V10 
-  ifelse(dt$mobileDeviceModel %in% 'LG-F600L', 3,  #엘지 V10 
-  ifelse(dt$mobileDeviceModel %in% 'LGM-X600S', 3, #엘지 q6 
-  ifelse(dt$mobileDeviceModel %in% 'LGM-K120L', 3, #엘지 x300 
-  ifelse(dt$mobileDeviceModel %in% 'LGM-X320L', 3, #엘지 x500 
-  ifelse(dt$mobileDeviceModel %in% 'IM-100S', 4, #스카이 im100 
-  ifelse(dt$mobileDeviceModel %in% 'IM-A890K', 4, #팬텍 베가 시크릿노트  
-  ifelse(dt$mobileDeviceModel %in% 'Windows RT Tablet', 5, #surface (마소)
+  ifelse(dt$mobileDeviceModel %in% 'LG-F600L', 3,  #엘지 V10 #LG V시리즈 끝 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'LGM-X600S', 3, #엘지 q6 (중급형) #LG Q시리즈 == 중급
+  ifelse(dt$mobileDeviceModel %in% 'LGM-K120L', 3, #엘지 x300 (보급형) #LG X시리즈 == 보급 
+  ifelse(dt$mobileDeviceModel %in% 'LGM-X320L', 3, #엘지 x500 (보급형)
+  ifelse(dt$mobileDeviceModel %in% 'IM-100S', 4, #스카이 im100 (보급형)
+  ifelse(dt$mobileDeviceModel %in% 'IM-A890K', 4, #팬텍 베가 시크릿노트 (고급형)
+  ifelse(dt$mobileDeviceModel %in% 'Windows RT Tablet', 5, #surface (마소) -> ??? 
     0))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 #------코드 개선작업 -------#
 
-dt$mobileDeviceModel2 <- 
-  ifelse(dt$mobileDeviceModel %in% 'iPhone', 1,
-  ifelse(dt$mobileDeviceModel %in% c('SM-G955N', 'SM-G950N', 'SM-G930S', 'SM-G935S', 'SM-G965N', 'SM-G930L', 'SM-G935L','SM-G935K','SM-G960N', 'SM-G920S', 'SM-G920K', 'SM-G925K', 'SM-G920L', 'SM-G930K', 'SM-G925L', 'SM-G928S'), 2,
-  ifelse(dt$mobileDeviceModel %in% c('SM-G610L', 'SM-G610S', 'SM-G925S', 'SM-G610K', 'SM-G920A', 'SM-G928L', 'SM-G720N0', 'SM-G906S'), 2,
-  ifelse(dt$mobileDeviceModel %in% c('SM-G906K', 'SM-G928K', 'SM-G610K/KKU1APL1', 'SM-G600S', 'SM-N950N/KSU1AQI2', 'SM-N920S','SM-N950N'), 2, 
-  ifelse(dt$mobileDeviceModel %in% c('SM-N935K', 'SM-N935S', 'SM-N920K', 'SM-N920L', 'SM-N910S','SM-N916L', 'SM-N910L', 'SM-N900S'), 2, 
-  ifelse(dt$mobileDeviceModel %in% c('SM-N916S', 'M-N910K', 'M-N915S', 'SM-N935L', 'SM-N916K', 'SM-N900L', 'SM-A530N', 'SM-A720S'), 2, 
-  ifelse(dt$mobileDeviceModel %in% c('SM-A710L', 'SM-A810S', 'SM-A710K', 'SM-A520F', 'SM-A520L', 'SM-A800S', 'SM-A520S', 'SM-A520K'), 2,
-  ifelse(dt$mobileDeviceModel %in% c('SM-A500L', 'SM-A710S', 'SM-A310N0', 'SM-A510S', 'SM-A700L', 'SM-J530S','SM-J730K', 'SM-J710K'), 2,
-  ifelse(dt$mobileDeviceModel %in% c('SM-J727S', 'SM-J500N0','SM-J330', 'SM-J510H', 'SM-J510L', 'SM-J510S', 'SM-J510K', 'SM-J530L'), 2,
-  ifelse(dt$mobileDeviceModel %in% c('SHV-E330S', 'SHV-E250S'), 2, 0)))))))))))
+# 2018-07-09 코드 작동 확인 
+# 여기서 이제 브랜드별 고급/보급만 분류하면 됨 
 
+train2$mobilemodel <- 
+  ifelse(train2$mobileDeviceModel %in% 'iPhone', 1,
+  ifelse(train2$mobileDeviceModel %in% c('SM-G955N', 'SM-G950N', 'SM-G930S', 'SM-G935S', 'SM-G965N', 'SM-G930L', 'SM-G935L','SM-G935K','SM-G960N', 'SM-G920S', 'SM-G920K', 'SM-G925K', 'SM-G920L', 'SM-G930K', 'SM-G925L', 'SM-G928S'), 2,
+  ifelse(train2$mobileDeviceModel %in% c('SM-G610L', 'SM-G610S', 'SM-G925S', 'SM-G610K', 'SM-G920A', 'SM-G928L', 'SM-G720N0', 'SM-G906S','SM-G906K', 'SM-G928K', 'SM-G610K/KKU1APL1', 'SM-G600S', 'SHV-E330S', 'SHV-E250S'), 2,
+  ifelse(train2$mobileDeviceModel %in% c('SM-N920S','SM-N950N', 'SM-N935K', 'SM-N935S', 'SM-N920K', 'SM-N920L', 'SM-N910S','SM-N916L', 'SM-N910L', 'SM-N900S', 'SM-N916S', 'M-N910K', 'M-N915S', 'SM-N935L', 'SM-N916K', 'SM-N900L'), 2, 
+  ifelse(train2$mobileDeviceModel %in% c('SM-A530N', 'SM-A720S', 'SM-A710L', 'SM-A810S', 'SM-A710K', 'SM-A520F', 'SM-A520L', 'SM-A800S', 'SM-A520S', 'SM-A520K', 'SM-A500L', 'SM-A710S', 'SM-A310N0', 'SM-A510S', 'SM-A700L'), 3, 
+  ifelse(train2$mobileDeviceModel %in% c('SM-J530S','SM-J730K', 'SM-J710K', 'SM-J727S', 'SM-J500N0','SM-J330', 'SM-J510H', 'SM-J510L', 'SM-J510S', 'SM-J510K', 'SM-J530L'), 4,
+  ifelse(train2$mobileDeviceModel %in% c('LGM-V300L', 'F800S', 'F800K', 'F600L', 'F700S', 'F700K', 'F700L', 'LG-F700L', 'H830', 'M-G600K', 'LS991', 'LGM-X600L', 'LGM-G600L', 'LGM-G600S', 'V300L', 'LG-F800L', 'F600S ', 'LG-F600L', 'LGM-X600S', 'LGM-K120L', 'LGM-X320L'), 3, 
+  ifelse(train2$mobileDeviceModel %in% c('IM-100S', 'IM-A890K'), 4,  
+  ifelse(train2$mobileDeviceModel %in% 'Windows RT Tablet', 5, 0)))))))))))))
 
-dt$mobileDeviceModel2 <- 
-  ifelse(dt$mobileDeviceModel %in% c('LGM-V300L', 'F800S', 'F800K', 'F600L', 'F700S', 'F700K', 'F700L', 'LG-F700L', 'H830', 'M-G600K', 'LS991', 'LGM-X600L', 'LGM-G600L', 'LGM-G600S', 'V300L', 'LG-F800L', 'F600S ', 'LG-F600L', 'LGM-X600S', 'LGM-K120L', 'LGM-X320L'), 3, 0)
-  ifelse(dt$mobileDeviceModel %in% c('IM-100S', 'IM-A890K'), 4,  
-  ifelse(dt$mobileDeviceModel %in% c('Windows RT Tablet'), 5, 0)))
+# ----------------------------------------------------------------------- # 
+# ----------------------------------------------------------------------- # 
+# ----------------------------------------------------------------------- # 
 
+# 코드 개선을 위한 작업 
+#https://dplyr.tidyverse.org/reference/case_when.html
+
+library(dplyr)
+attach(train2)
+
+train2$mobileDeviceModel3 <- train2 %>% 
+  mutate(mobileDeviceModel3 = ifelse(mobileDeviceModel == "LGM-V300L" | mobileDeviceModel =="F800S" | mobileDeviceModel == "F800K" | mobileDeviceModel == "F600L" |
+   mobileDeviceModel == "F700S" | mobileDeviceModel == "F700K" | mobileDeviceModel == "F700L" | mobileDeviceModel == "LG-F700L" | mobileDeviceModel == "H830" | 
+   mobileDeviceModel == "M-G600K" | mobileDeviceModel == "LS991" | mobileDeviceModel == "LGM-X600L" | mobileDeviceModel == "LGM-G600L" |
+   mobileDeviceModel == "LGM-G600S" | mobileDeviceModel == "V300L" | mobileDeviceModel == "LG-F800L" | mobileDeviceModel == "F600S" | mobileDeviceModel == "LG-F600L", 3, 
+    ifelse(mobileDeviceModel == "LGM-X600S" | mobileDeviceModel == "LGM-K120L" | mobileDeviceModel == "LGM-X320L" , 4, NA_real_)))
 
 f %>% mutate(g = case_when(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4) ~ 2,
                             a == 0 | a == 1 | a == 4 | a == 3 |  c == 4 ~ 3,
@@ -464,51 +477,16 @@ df %>%
   mutate(g = if_else(mobileDeviceModel == 'LGM-V300L' | mobileDeviceModel == 'F800S' | dt %% mobileDeviceModel == 'F800K' | (a == 1 & b == 4), 2,
                if_else(a == 0 | a == 1 | a == 4 | a == 3 |  c == 4, 3, NA_real_)))
 
-
-#https://dplyr.tidyverse.org/reference/case_when.html
-
-
-patterns <- list(
-  x %% 35 == 0 ~ "fizz buzz",
-  x %% 5 == 0 ~ "fizz",
-  x %% 7 == 0 ~ "buzz",
-  TRUE ~ as.factor(x)
-)
-case_when(!!!patterns)
-
-library(dplyr)
-patterns <- list(
-    dt %% mobileDeviceModel == 'LGM-V300L' ~ 3, #엘지 v30 thinq 
-    dt %% mobileDeviceModel == 'F800S' ~ 3, #엘지 V20 
-    dt %% mobileDeviceModel == 'F800K' ~ 3, #엘지 V20 
-    dt %% mobileDeviceModel ==  'F600L' ~ 3, #엘지 V10 
-    dt %% mobileDeviceModel ==  'F700S' ~ 3, #엘지 g5 
-    dt %% mobileDeviceModel ==  'F700K' ~ 3, #엘지 g5 
-    dt %% mobileDeviceModel ==  'F700L' ~ 3,#엘지 g5 
-    dt %% mobileDeviceModel ==  'LG-F700L' ~ 3,  #엘지 g5 
-    dt %% mobileDeviceModel ==  'H830' ~ 3,  #엘지 g5 usa 
-    dt %% mobileDeviceModel ==  'M-G600K' ~ 3, #엘지 g6 
-    dt %% mobileDeviceModel ==  'LS991' ~ 3, #엘지 USA 한정 
-    dt %% mobileDeviceModel ==  'LGM-X600L' ~ 3, #엘지 g6 
-    dt %% mobileDeviceModel ==  'LGM-G600L' ~ 3, #엘지 g6 
-    dt %% mobileDeviceModel ==  'LGM-G600S' ~ 3, #엘지 g6 
-    dt %% mobileDeviceModel ==  'V300L' ~ 3, #엘지 v30 
-    dt %% mobileDeviceModel ==  'LG-F800L' ~ 3,  #엘지 v20
-    dt %% mobileDeviceModel ==  'F600S ' ~ 3,  #엘지 V10 
-    dt %% mobileDeviceModel ==  'LG-F600L' ~ 3,  #엘지 V10 
-    dt %% mobileDeviceModel ==  'LGM-X600S' ~ 3, #엘지 q6 
-    dt %% mobileDeviceModel ==  'LGM-K120L' ~ 3, #엘지 x300 
-    dt %% mobileDeviceModel ==  'LGM-X320L' ~ 3, #엘지 x500 
-    TRUE ~ as.factor(x)
-     ) 
-
-case_when(!!!patterns)
-
+# ----------------------------------------------------------------------- # 
+# ----------------------------------------------------------------------- # 
+# ----------------------------------------------------------------------- # 
 
 # 특정 열 삭제 혹은 추출 
+
 dt2 <-dt[, c(1:5)] #열 
 dt2 <- dt[c(3:10), ] #행
 
+chi <-dt[, c(10:15)] #열 
 
 # ----------------------------------------------------------------------- # 
 
@@ -556,22 +534,5 @@ barplot(os, beside = TRUE, legend = TRUE)
 write.csv(data, file="ga360-data-20180704-2.csv", row.names = TRUE) 
 
 
--- 
+# ----------------------------------------------------------------------- # 
 
-chi <-dt[, c(10:15)] #열 
-
-
-f %>% mutate(g = case_when(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4) ~ 2,
-                            a == 0 | a == 1 | a == 4 | a == 3 |  c == 4 ~ 3,
-                            TRUE ~ NA_real_))
-
-df %>%
-  mutate(g = if_else(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4), 2,
-               if_else(a == 0 | a == 1 | a == 4 | a == 3 |  c == 4, 3, NA_real_)))
-
-
-
-df %>% 
-    mutate( g = case_when(
-                a == 2 | a == 5 | a == 7 | (a == 1 & b == 4 )     ~   2,
-                a == 0 | a == 1 | a == 4 |  a == 3 | c == 4       ~   3
