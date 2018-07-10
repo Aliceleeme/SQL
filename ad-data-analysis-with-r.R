@@ -107,11 +107,9 @@ dtMobile <- subset(dt, isPC == 0)
 dt <- dtMobile #데이터 복사 
 dt <- dt[, c(3:14)]
 
-
 # 데이터 샘플링  
 # 샘플링 방법론 참고: http://rfriend.tistory.com/58 
 dt <- sample(dt, 1000, replace=F)
-
 
 #— 2. 그룹수, 70% : 30%
 idx <- sample(2, nrow(dt), replace = TRUE, prob = c(0.7, 0.3))
@@ -121,7 +119,6 @@ train <- data[idx == 1, ]
 test <- data[idx == 2, ]
 
 # 불균형을 줄이는 샘플링 
-
 dtmobile$isRegister2 <- dtmobile$isRegister
 
 #https://thebook.io/006723/ch10/06/01/ 
@@ -129,8 +126,7 @@ library(caret)
 train <- upSample(subset(dt, select = -isRegister2), dt$isRegister) #업샘플링: 해당 분류에 속하는 데이터가 적은 쪽을 표본으로 더 많이 추출하는 방법
 train2 <- downSample(subset(dt, select = -isRegister2), dt$isRegister) #다운샘플링: 데이터가 많은 쪽을 적게 추출하는 방법
 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 #다운샘플링 하면 5:5로 비율 맞춰져서 데이터 축소 됨 
-
-
+# downsample한 데이터의 상황 점검 
 length(which(train$isRegister==0))
 length(which(train$isRegister==1))
 
@@ -144,6 +140,10 @@ hist(train2$isRegister)
 # data distribution (EDA)
 hist(dt$isRegister)
 hist(dt$isApply)
+
+summary(dt) #데이터 변수별 값 현황 요약 
+var(dt) #분산
+sd(dt) #표준편차 
 
 # 특정조건의 변수 삭제/제외하기 
 # http://knight76.tistory.com/entry/R-data-table%EC%97%90%EC%84%9C-%ED%8A%B9%EC%A0%95-%EC%A1%B0%EA%B1%B4%EC%9D%98-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%9C%EC%99%B8%ED%95%98%EA%B8%B0
@@ -179,31 +179,16 @@ dt$isPC <- as.factor(dt$isPC)
 dt$isRegister <- as.factor(dt$isRegister)
 dt$isApply <- as.factor(dt$isApply)
 
-# 컬럼 삭제
-library(dplyr)
-dt <- 
-  dt %>%
-   select(operatingSystem, operatingSystemVersion, browser, browserVersion, deviceCategory, 
-          isMobile, mobileDeviceBranding, mobileDeviceModel, isRegister, isApply, 
-          deviceCategory2, operatingSystem2, mobileDeviceBranding2, operatingSystemVersion2)
 
 # categorical variables의 분포 알아보기 (data_type = factor일 때만 사용 가능)
 levels(dt$mobileDeviceBranding)
 levels(dt$browser)
 
 # 접수와 승인의 갯수 알아보기 
-
-#isregister에서 1의 갯수 (접수)
-length(which(dt$isRegister==1)) 
-
-#isapply에서 1의 갯수 (승인)
-length(which(dt$isApply==1)) 
-
-#ismobile에서 0의 갯수 
-length(which(dt$isMobile==1))
-
-#해당 날짜에 데이터 존재 유무 확인 
-length(which(dt$TABLE_DATE=="20180531"))
+length(which(dt$isRegister==1))  #isregister에서 1의 갯수 (접수)
+length(which(dt$isApply==1))  #isapply에서 1의 갯수 (승인)
+length(which(dt$isMobile==1)) #ismobile에서 0의 갯수 
+length(which(dt$TABLE_DATE=="20180531")) #해당 날짜에 데이터 존재 유무 확인 
 
 #operating system 확인 
 length(which(dt$operatingSystem =="Tizen"))
@@ -263,9 +248,10 @@ dt$mobileDeviceBranding2 <-
   ifelse(dt$mobileDeviceBranding %in% 'Sony', 9,  
   ifelse(dt$mobileDeviceBranding %in% 'Xiaomi', 10,
   ifelse(dt$mobileDeviceBranding %in% 'Windows', 11,
-  ifelse(dt$mobileDeviceBranding %in% 'Huawei', 12,
-  ifelse(dt$mobileDeviceBranding %in% 'Blackberry', 13,
-  ifelse(dt$mobileDeviceBranding %in% 'Microsoft', 13,
+  ifelse(dt$mobileDeviceBranding %in% 'Blackberry', 12,
+  ifelse(dt$mobileDeviceBranding %in% 'Microsoft', 12,
+         #코드수정 필요 2018-07-10 
+         
   ifelse(dt$mobileDeviceBranding %in% 'Alldaymall', 16,
   ifelse(dt$mobileDeviceBranding %in% 'Asus', 16, 
   ifelse(dt$mobileDeviceBranding %in% 'Amazon', 16, 
@@ -301,7 +287,6 @@ dt$mobileDeviceBranding2 <-
 
 #pc = ms, apple, samsung, LG, google, notset 
 
-
 # pc인 조건과 mobile인 조건을 따로 추출/데이터 분석해서 돌려봐야 하는거 아닌가 싶음
 
 #Browser 
@@ -332,7 +317,25 @@ dt$browser2 <-
          0)))))))))))))))))))))))
 
 # device model
-# 기기 분리> 고급형, 보급형, 등등 
+# 브랜드별 기기 분류; 고급형, 보급형, 등등 
+# 2018-07-09 코드 작동 확인 
+
+train2$mobilemodel <- 
+  ifelse(train2$mobileDeviceModel %in% 'iPhone', 1,
+  ifelse(train2$mobileDeviceModel %in% c('SM-G955N', 'SM-G950N', 'SM-G930S', 'SM-G935S', 'SM-G965N', 'SM-G930L', 'SM-G935L','SM-G935K','SM-G960N', 'SM-G920S', 'SM-G920K', 'SM-G925K', 'SM-G920L', 'SM-G930K', 'SM-G925L', 'SM-G928S'), 2,
+  ifelse(train2$mobileDeviceModel %in% c('SM-G610L', 'SM-G610S', 'SM-G925S', 'SM-G610K', 'SM-G920A', 'SM-G928L', 'SM-G720N0', 'SM-G906S','SM-G906K', 'SM-G928K', 'SM-G610K/KKU1APL1', 'SM-G600S', 'SHV-E330S', 'SHV-E250S'), 2,
+  ifelse(train2$mobileDeviceModel %in% c('SM-N920S','SM-N950N', 'SM-N935K', 'SM-N935S', 'SM-N920K', 'SM-N920L', 'SM-N910S','SM-N916L', 'SM-N910L', 'SM-N900S', 'SM-N916S', 'M-N910K', 'M-N915S', 'SM-N935L', 'SM-N916K', 'SM-N900L'), 2, 
+  ifelse(train2$mobileDeviceModel %in% c('SM-A530N', 'SM-A720S', 'SM-A710L', 'SM-A810S', 'SM-A710K', 'SM-A520F', 'SM-A520L', 'SM-A800S', 'SM-A520S', 'SM-A520K', 'SM-A500L', 'SM-A710S', 'SM-A310N0', 'SM-A510S', 'SM-A700L'), 3, 
+  ifelse(train2$mobileDeviceModel %in% c('SM-J530S','SM-J730K', 'SM-J710K', 'SM-J727S', 'SM-J500N0','SM-J330', 'SM-J510H', 'SM-J510L', 'SM-J510S', 'SM-J510K', 'SM-J530L'), 4,
+  ifelse(train2$mobileDeviceModel %in% c('LGM-V300L', 'F800S', 'F800K', 'F600L', 'F700S', 'F700K', 'F700L', 'LG-F700L', 'H830', 'M-G600K', 'LS991', 'LGM-X600L', 'LGM-G600L', 'LGM-G600S', 'V300L', 'LG-F800L', 'F600S ', 'LG-F600L', 'LGM-X600S', 'LGM-K120L', 'LGM-X320L'), 5, 
+  ifelse(train2$mobileDeviceModel %in% c('LGM-X600S', 'LGM-K120L', 'LGM-X320L'), 6, 
+  ifelse(train2$mobileDeviceModel %in% c('IM-100S', 'IM-A890K'), 7,  
+  ifelse(train2$mobileDeviceModel %in% 'Windows RT Tablet', 8, 9
+  ))))))))))
+
+# ----------------------------------------------------------------------- # 
+# ----------------------------------------------------------------------- # 
+
 dt$mobileDeviceModel2 <- 
   ifelse(dt$mobileDeviceModel %in% 'iPhone', 1, #아이폰 (고급형)
   ifelse(dt$mobileDeviceModel %in% 'SM-G955N', 2, #갤럭시 시리즈 시작 (고급형)
@@ -436,48 +439,6 @@ dt$mobileDeviceModel2 <-
     0))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
-#------코드 개선작업 -------#
-
-# 2018-07-09 코드 작동 확인 
-# 여기서 이제 브랜드별 고급/보급만 분류하면 됨 
-
-train2$mobilemodel <- 
-  ifelse(train2$mobileDeviceModel %in% 'iPhone', 1,
-  ifelse(train2$mobileDeviceModel %in% c('SM-G955N', 'SM-G950N', 'SM-G930S', 'SM-G935S', 'SM-G965N', 'SM-G930L', 'SM-G935L','SM-G935K','SM-G960N', 'SM-G920S', 'SM-G920K', 'SM-G925K', 'SM-G920L', 'SM-G930K', 'SM-G925L', 'SM-G928S'), 2,
-  ifelse(train2$mobileDeviceModel %in% c('SM-G610L', 'SM-G610S', 'SM-G925S', 'SM-G610K', 'SM-G920A', 'SM-G928L', 'SM-G720N0', 'SM-G906S','SM-G906K', 'SM-G928K', 'SM-G610K/KKU1APL1', 'SM-G600S', 'SHV-E330S', 'SHV-E250S'), 2,
-  ifelse(train2$mobileDeviceModel %in% c('SM-N920S','SM-N950N', 'SM-N935K', 'SM-N935S', 'SM-N920K', 'SM-N920L', 'SM-N910S','SM-N916L', 'SM-N910L', 'SM-N900S', 'SM-N916S', 'M-N910K', 'M-N915S', 'SM-N935L', 'SM-N916K', 'SM-N900L'), 2, 
-  ifelse(train2$mobileDeviceModel %in% c('SM-A530N', 'SM-A720S', 'SM-A710L', 'SM-A810S', 'SM-A710K', 'SM-A520F', 'SM-A520L', 'SM-A800S', 'SM-A520S', 'SM-A520K', 'SM-A500L', 'SM-A710S', 'SM-A310N0', 'SM-A510S', 'SM-A700L'), 3, 
-  ifelse(train2$mobileDeviceModel %in% c('SM-J530S','SM-J730K', 'SM-J710K', 'SM-J727S', 'SM-J500N0','SM-J330', 'SM-J510H', 'SM-J510L', 'SM-J510S', 'SM-J510K', 'SM-J530L'), 4,
-  ifelse(train2$mobileDeviceModel %in% c('LGM-V300L', 'F800S', 'F800K', 'F600L', 'F700S', 'F700K', 'F700L', 'LG-F700L', 'H830', 'M-G600K', 'LS991', 'LGM-X600L', 'LGM-G600L', 'LGM-G600S', 'V300L', 'LG-F800L', 'F600S ', 'LG-F600L', 'LGM-X600S', 'LGM-K120L', 'LGM-X320L'), 3, 
-  ifelse(train2$mobileDeviceModel %in% c('IM-100S', 'IM-A890K'), 4,  
-  ifelse(train2$mobileDeviceModel %in% 'Windows RT Tablet', 5, 0)))))))))))))
-
-# ----------------------------------------------------------------------- # 
-# ----------------------------------------------------------------------- # 
-# ----------------------------------------------------------------------- # 
-
-# 코드 개선을 위한 작업 
-#https://dplyr.tidyverse.org/reference/case_when.html
-
-library(dplyr)
-attach(train2)
-
-train2$mobileDeviceModel3 <- train2 %>% 
-  mutate(mobileDeviceModel3 = ifelse(mobileDeviceModel == "LGM-V300L" | mobileDeviceModel =="F800S" | mobileDeviceModel == "F800K" | mobileDeviceModel == "F600L" |
-   mobileDeviceModel == "F700S" | mobileDeviceModel == "F700K" | mobileDeviceModel == "F700L" | mobileDeviceModel == "LG-F700L" | mobileDeviceModel == "H830" | 
-   mobileDeviceModel == "M-G600K" | mobileDeviceModel == "LS991" | mobileDeviceModel == "LGM-X600L" | mobileDeviceModel == "LGM-G600L" |
-   mobileDeviceModel == "LGM-G600S" | mobileDeviceModel == "V300L" | mobileDeviceModel == "LG-F800L" | mobileDeviceModel == "F600S" | mobileDeviceModel == "LG-F600L", 3, 
-    ifelse(mobileDeviceModel == "LGM-X600S" | mobileDeviceModel == "LGM-K120L" | mobileDeviceModel == "LGM-X320L" , 4, NA_real_)))
-
-f %>% mutate(g = case_when(a == 2 | a == 5 | a == 7 | (a == 1 & b == 4) ~ 2,
-                            a == 0 | a == 1 | a == 4 | a == 3 |  c == 4 ~ 3,
-                            TRUE ~ NA_real_))
-
-df %>%
-  mutate(g = if_else(mobileDeviceModel == 'LGM-V300L' | mobileDeviceModel == 'F800S' | dt %% mobileDeviceModel == 'F800K' | (a == 1 & b == 4), 2,
-               if_else(a == 0 | a == 1 | a == 4 | a == 3 |  c == 4, 3, NA_real_)))
-
-# ----------------------------------------------------------------------- # 
 # ----------------------------------------------------------------------- # 
 # ----------------------------------------------------------------------- # 
 
@@ -486,30 +447,139 @@ df %>%
 dt2 <-dt[, c(1:5)] #열 
 dt2 <- dt[c(3:10), ] #행
 
-chi <-dt[, c(10:15)] #열 
+test <- train2[, c(2, 4, 6, 7, 10, 13:17)]
 
 # ----------------------------------------------------------------------- # 
+
+#독립성검정
+attach(train2)
+detach(train2)
 
 #이변량분할표 contingency table 
 #http://rfriend.tistory.com/tag/gmodels%20package
 
-dt_table_3 <- with(dt, table(mobileDeviceBranding, isRegister))
+table <- xtabs(~operatingSystem2+isRegister, data=test) # https://m.blog.naver.com/PostView.nhn?blogId=liberty264&logNo=220985283476&proxyReferer=https%3A%2F%2Fwww.google.co.kr%2F
 
-mosaic(dt_table_3, 
+table <- xtabs(~mobileDeviceBranding2+isRegister, data=test) 
+table <- xtabs(~browser2+isRegister, data=test) 
+table <- xtabs(~mobilemodel+isRegister, data=test) 
+
+table
+
+# 모자이크 그래프 
+mosaic(table, 
         gp=gpar(fill=c("red", "blue")), 
         direction="v", 
-        main="Mosaic plot of device branding & register")
+        main="Mosaic plot")
  
+chisq.test(table) 
+#귀무가설: 성별과 운동량은 관계가 있다 
+#p<0.05 - 귀무가설 성립 
+
+# ----------------------------------------------------------------------- # 
+
+# factor to numeric 
+train2$operatingSystem2 <- as.numeric(train2$operatingSystem2)
+train2$mobileDeviceBranding2 <- as.numeric(train2$mobileDeviceBranding2)
+train2$browser2 <- as.numeric(train2$browser2)
+test$devicecategory <- as.numeric(test$devicecategory)
+
+sum(is.na(test))
+test <- na.omit(test)
+
+# ----------------------------------------------------------------------- # 
+
+# 1차 chi^2 분석 후 데이터 재정제 
+
+#if문 작성 방법 
+#모바일 기종
+
+train2$mobilemodel <- 
+  ifelse(train2$mobilemodel %in% 4, 3,
+  ifelse(train2$mobilemodel %in% 7, 9, 
+  ifelse(train2$mobilemodel %in% 8, 9, 
+  ifelse(train2$mobilemodel %in% 'Chrome OS', 4,
+  ifelse(train2$mobilemodel %in% 'Linux', 5,
+  ifelse(train2$mobilemodel %in% 'Macintosh', 6,
+  ifelse(train2$mobilemodel %in% 'Windows', 7,
+ 0)))))))
+
+            isRegister
+mobilemodel    0    1
+          1  396  844
+          2 2340 2038
+          3  204  198 #삼성 a시리즈 
+          4  136   93 #삼성 j시리즈 
+          5  253  293
+          7    1   12 #스카이 
+          8    6    4 #서피스 
+          9  519  373 #기타 
+
+# 7,8 삭제 
+
+#브라우저 종료 
+train2$browser2 <- 
+  ifelse(train2$browser2 %in% 'Android', 1,
+  ifelse(train2$browser2 %in% 'iOS', 2, 
+  ifelse(train2$browser2 %in% 'Blackberry', 3, 
+  ifelse(train2$browser2 %in% 'Chrome OS', 4,
+  ifelse(train2$browser2 %in% 'Linux', 5,
+  ifelse(train2$browser2 %in% 'Macintosh', 6,
+  ifelse(train2$browser2 %in% 'Windows', 7,
+ 0)))))))
+
+        isRegister
+browser2    0    1
+       1  224  585
+       3 1911 1578
+       4  899 1053
+       5  608  368
+       6  203  267
+       7    9    4  #opera 
+       9    1    0  #블랙베리 
+# 7,9 삭제 
+
+
+#모바일 기기 브랜드  
+#디바이스 브랜드랑 기종이랑 안맞아? 
+train2$mobileDeviceBranding2 <- 
+  ifelse(train2$mobileDeviceBranding2 %in% 'Android', 1,
+  ifelse(train2$mobileDeviceBranding2 %in% 'iOS', 2, 
+  ifelse(train2$mobileDeviceBranding2 %in% 'Blackberry', 3, 
+  ifelse(train2$mobileDeviceBranding2 %in% 'Chrome OS', 4,
+  ifelse(train2$mobileDeviceBranding2 %in% 'Linux', 5,
+  ifelse(train2$mobileDeviceBranding2 %in% 'Macintosh', 6,
+  ifelse(train2$mobileDeviceBranding2 %in% 'Windows', 7,
+    0)))))))
+
+                      isRegister
+mobileDeviceBranding2    0    1
+                   1    42   26 #? 삼성 
+                   2  2993 2577 
+                   3   414  846
+                   4   364  351
+                   5     2    5 #? 화웨이 
+                   6     7   13 #? kt tech
+                   9    13   21 #? 소니
+                   10    3    6 #? 샤오미
+                   11    3    3 #? 윈도우
+                   12    6    4 #? 화웨이 
+                   13    8    3 #? 블랙베리+마소 
+## 10의 자리수인 애들 다 묶어서 새로운 분류로 만들 것 
+
+
+# ----------------------------------------------------------------------- # 
+
 #https://stats.stackexchange.com/questions/81483/warning-in-r-chi-squared-approximation-may-be-incorrect
 #카이제곱검정 http://rfriend.tistory.com/112
 
 library(gmodels) #Tools for Model Fitting #http://rfriend.tistory.com/120
 library(vcd) 
 
-attach(train2) #factor, chr로 정제된 데이터 넣기 
+attach(train2) 
 #detach(train2)
 
-CrossTable(mobileDeviceBranding2, isRegister, # crosstable = 교차분석 http://dbrang.tistory.com/1067 
+CrossTable(deviceCategory, isRegister, # crosstable = 교차분석 http://dbrang.tistory.com/1067 
             expected = TRUE, # expected frequency
             chisq = TRUE) # chisq-test 
 
@@ -530,9 +600,7 @@ chisq.test(model)
 # barplot으로 데이터 분포 파악 
 barplot(os, beside = TRUE, legend = TRUE)
 
-# csv exporting 
-write.csv(data, file="ga360-data-20180704-2.csv", row.names = TRUE) 
-
-
 # ----------------------------------------------------------------------- # 
 
+# csv exporting 
+write.csv(data, file="ga360-data-20180704-2.csv", row.names = TRUE) 
