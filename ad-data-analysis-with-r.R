@@ -13,12 +13,6 @@ ds <- bq_dataset(projectName, datasetName)
 
 # 실전용; device 데이터 추출 
 
-##sql <- "
-  ##SELECT TABLE_DATE, fullVisitorId, browser, operatingSystem, operatingSystemVersion, mobileDeviceBranding, mobileDeviceModel, deviceCategory 
-  ##FROM `v_device` 
-  ##INNER JOIN ``v_customDimensions_pivot`
-  ##WHERE TABLE_DATE BETWEEN @startDate AND @endDate;"
-
 # mobiledevice에서 떼어내서 tabletdivicemodel 다시 만들어야 함
 #프로젝트, 데이터셋 지정
 projectName <- "ga360-export" # put your projectID here
