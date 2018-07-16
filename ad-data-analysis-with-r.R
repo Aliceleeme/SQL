@@ -1,6 +1,6 @@
 #### data analysis with Bigquery and R ####
 # Written by Jihye Lee 
-# from 2018-06-22 to 
+# from 2018-06-22 to 2018-07-14
 
 #### Bigquery data extraction #### 
 library(bigrquery)
