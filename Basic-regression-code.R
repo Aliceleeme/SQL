@@ -1,15 +1,10 @@
 
 #### Logistic regression modeling test #### 
 
-#yogubul.df <- read.csv("rdata8.csv", header = TRUE, sep = ",")
-
-getwd()
-setwd("C:/Users/welcome3/Documents")
+#yogubul.df <- read.csv("data.csv", header = TRUE, sep = ",")
 
 library(readr)
-yogubul.df <- read_csv("rdata8.csv")
-
-rdata11 <- read_csv("rdata11.csv")
+yogubul.df <- read_csv("rdata8.csv")\
 
 class(yogubul.df)
 head(yogubul.df)
