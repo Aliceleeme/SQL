@@ -1,10 +1,13 @@
 
 #### Logistic regression modeling test #### 
+## written by Jihye Lee, June 2018 ##
 
-#yogubul.df <- read.csv("data.csv", header = TRUE, sep = ",")
+data <- "/Alice/Downloads/data.csv"
+
+#yogubul.df <- read.csv(data, header = TRUE, sep = ",")
 
 library(readr)
-yogubul.df <- read_csv("rdata8.csv")\
+yogubul.df <- read_csv(data)
 
 class(yogubul.df)
 head(yogubul.df)
