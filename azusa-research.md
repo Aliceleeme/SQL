@@ -1,4 +1,4 @@
-* company intro: https://iroots-search.jp/12636
+* company intro: https://iroots-search.jp/12636, https://cafe.naver.com/mynavikorea/65
 * 컨설팅펌 면접 https://ppss.kr/archives/107293
 * https://jobtalk.jp/company/22139/exams
 
