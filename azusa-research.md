@@ -1,7 +1,7 @@
 * company intro: https://iroots-search.jp/12636, https://cafe.naver.com/mynavikorea/65
 * 컨설팅펌 면접 https://ppss.kr/archives/107293
 * https://jobtalk.jp/company/22139/exams
-* azusa interview review? https://blog.naver.com/haruharu83/220562274439
+* azusa interview review? https://blog.naver.com/haruharu83/220562274439 / https://m.blog.naver.com/PostView.nhn?blogId=ahs21c&logNo=120021912473&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 
 
 컨설팅을 하는게 좋을까 아니면 나는 엔지니어가 되어야할까
